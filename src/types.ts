@@ -3,31 +3,32 @@
  * Copyright (c) 2021 Alain Dumesny - see GridStack root license
  */
 
-import { GridStack } from './gridstack';
-import { GridStackEngine } from './gridstack-engine';
+import { GridStack } from "./gridstack";
+import { GridStackEngine } from "./gridstack-engine";
 
 // default values for grid options - used during init and when saving out
 export const gridDefaults: GridStackOptions = {
-  alwaysShowResizeHandle: 'mobile',
+  alwaysShowResizeHandle: "mobile",
   animate: true,
   auto: true,
-  cellHeight: 'auto',
+  cellHeight: "auto",
   cellHeightThrottle: 100,
-  cellHeightUnit: 'px',
+  cellHeightUnit: "px",
   column: 12,
-  draggable: { handle: '.grid-stack-item-content', appendTo: 'body' },
-  handle: '.grid-stack-item-content',
-  itemClass: 'grid-stack-item',
+  draggable: { handle: ".grid-stack-item-content", appendTo: "body" },
+  disableRemoveNodeOnDrop: false,
+  handle: ".grid-stack-item-content",
+  itemClass: "grid-stack-item",
   margin: 10,
-  marginUnit: 'px',
+  marginUnit: "px",
   maxRow: 0,
   minRow: 0,
   oneColumnSize: 768,
-  placeholderClass: 'grid-stack-placeholder',
-  placeholderText: '',
-  removableOptions: { accept: '.grid-stack-item' },
-  resizable: { handles: 'se' },
-  rtl: 'auto',
+  placeholderClass: "grid-stack-placeholder",
+  placeholderText: "",
+  removableOptions: { accept: ".grid-stack-item" },
+  resizable: { handles: "se" },
+  rtl: "auto",
 
   // **** same as not being set ****
   // disableDrag: false,
@@ -43,8 +44,8 @@ export const gridDefaults: GridStackOptions = {
 
 /** default dragIn options */
 export const dragInDefaultOptions: DDDragInOpt = {
-  handle: '.grid-stack-item-content',
-  appendTo: 'body',
+  handle: ".grid-stack-item-content",
+  appendTo: "body",
   // revert: 'invalid',
   // scroll: false,
 };
@@ -53,8 +54,17 @@ export const dragInDefaultOptions: DDDragInOpt = {
  * including a custom function that takes new/old column count, and array of new/old positions
  * Note: new list may be partially already filled if we have a cache of the layout at that size and new items were added later.
  */
-export type ColumnOptions = 'moveScale' | 'move' | 'scale' | 'none' |
-  ((column: number, oldColumn: number, nodes: GridStackNode[], oldNodes: GridStackNode[]) => void);
+export type ColumnOptions =
+  | "moveScale"
+  | "move"
+  | "scale"
+  | "none"
+  | ((
+      column: number,
+      oldColumn: number,
+      nodes: GridStackNode[],
+      oldNodes: GridStackNode[]
+    ) => void);
 
 export type numberOrString = number | string;
 export interface GridItemHTMLElement extends HTMLElement {
@@ -68,13 +78,31 @@ export type GridStackElement = string | HTMLElement | GridItemHTMLElement;
 
 /** specific and general event handlers for the .on() method */
 export type GridStackEventHandler = (event: Event) => void;
-export type GridStackElementHandler = (event: Event, el: GridItemHTMLElement) => void;
-export type GridStackNodesHandler = (event: Event, nodes: GridStackNode[]) => void;
-export type GridStackDroppedHandler = (event: Event, previousNode: GridStackNode, newNode: GridStackNode) => void;
-export type GridStackEventHandlerCallback = GridStackEventHandler | GridStackElementHandler | GridStackNodesHandler | GridStackDroppedHandler;
+export type GridStackElementHandler = (
+  event: Event,
+  el: GridItemHTMLElement
+) => void;
+export type GridStackNodesHandler = (
+  event: Event,
+  nodes: GridStackNode[]
+) => void;
+export type GridStackDroppedHandler = (
+  event: Event,
+  previousNode: GridStackNode,
+  newNode: GridStackNode
+) => void;
+export type GridStackEventHandlerCallback =
+  | GridStackEventHandler
+  | GridStackElementHandler
+  | GridStackNodesHandler
+  | GridStackDroppedHandler;
 
 /** optional function called during load() to callback the user on new added/remove items */
-export type AddRemoveFcn = (g: GridStack, w: GridStackWidget, add: boolean) => HTMLElement | undefined;
+export type AddRemoveFcn = (
+  g: GridStack,
+  w: GridStackWidget,
+  add: boolean
+) => HTMLElement | undefined;
 
 /**
  * Defines the options for a Grid
@@ -101,7 +129,7 @@ export interface GridStackOptions {
     * `true` the resizing handles are always shown
     * 'mobile' if running on a mobile device, default to `true` (since there is no hovering per say), else `false`.
     See [example](http://gridstack.github.io/gridstack.js/demo/mobile.html) */
-  alwaysShowResizeHandle?: true | false | 'mobile';
+  alwaysShowResizeHandle?: true | false | "mobile";
 
   /** turns animation on (default?: true) */
   animate?: boolean;
@@ -134,7 +162,7 @@ export interface GridStackOptions {
    * Note: for nested grids, it is recommended to use 'auto' which will always match the container grid-item current width (in column) to keep inside and outside
    * items always to same. flag is not supported for regular non-nested grids.
    */
-  column?: number | 'auto';
+  column?: number | "auto";
 
   /** additional class on top of '.grid-stack' (which is required for our CSS) to differentiate this instance.
   Note: only used by addGrid(), else your element should have the needed class */
@@ -160,6 +188,9 @@ export interface GridStackOptions {
 
   /** let user drag nested grid items out of a parent or not (default true - not supported yet) */
   //dragOut?: boolean;
+
+  /** Disables the automatic shift of a grid-stack element when dropped to another stack */
+  disableRemoveNodeOnDrop?: boolean;
 
   /** the type of engine to create (so you can subclass) default to GridStackEngine */
   engineClass?: typeof GridStackEngine;
@@ -240,7 +271,7 @@ export interface GridStackOptions {
    * if true turns grid to RTL. Possible values are true, false, 'auto' (default?: 'auto')
    * See [example](http://gridstack.github.io/gridstack.js/demo/rtl.html)
    */
-  rtl?: boolean | 'auto';
+  rtl?: boolean | "auto";
 
   /**
    * makes grid static (default?: false). If `true` widgets are not movable/resizable.
@@ -329,7 +360,7 @@ export interface DDResizeOpt {
   /**
    * sides where you can resize from (ex: 'e, se, s, sw, w') - default 'se' (south-east)
    * Note: it is not recommended to resize from the top sides as weird side effect may occur.
-  */
+   */
   handles?: string;
 }
 
